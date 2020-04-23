@@ -1,0 +1,4 @@
+#ifndef CLICKABLELABEL_H
+#define CLICKABLELABEL_H
+
+#endif // CLICKABLELABEL_H
