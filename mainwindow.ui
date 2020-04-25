@@ -351,7 +351,9 @@
            </font>
           </property>
           <property name="text">
-           <string>Change Color</string>
+           <string>Change
+Default
+Color</string>
           </property>
          </widget>
         </item>

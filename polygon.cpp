@@ -11,8 +11,8 @@ polygon::polygon()
 polygon::polygon(Color col){ this->col = col; finished = false;}
 
 void polygon::addPoint(Point* p) {
-    for(auto& point : points)
-        if(distance(*p, *point) < 10) {
+    if(points.size() != 0)
+        if(distance(*p, *points[0]) < 10) {
             cout << "changed to true" << endl;
             finished = true;
         }
