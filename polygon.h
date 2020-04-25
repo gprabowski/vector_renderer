@@ -1,20 +1,19 @@
-#ifndef LINE_H
-#define LINE_H
+#ifndef POLYGON_H
+#define POLYGON_H
 #include "drawable.h"
-#include "clickablelabel.h"
-#include "utility_func.h"
 
-class line: public drawable {
+class polygon : public drawable
+{
 public:
-    line(){}
-    line(Color col);
+    polygon();
+    polygon(Color col);
     void addPoint(Point* p) override;
     Point* getPoint(int i) override;
     void draw(ClickableLabel* lab) override;
     void erase(ClickableLabel* lab) override;
     bool isFinished() override;
-
+private:
+    bool finished;
 };
 
-
-#endif // LINE_H
+#endif // POLYGON_H
