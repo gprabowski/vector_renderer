@@ -5,12 +5,15 @@
 #include "clickablelabel.h"
 #include "point.h"
 #include "color.h"
+#include "utility_func.h"
 
 using std::vector;
 class drawable {
     public:
         drawable() {}
         ~drawable() {}
+        enum shape {cir, pol, lin};
+        shape getShape() {return sh;}
         virtual void addPoint(Point* p) = 0;
         virtual Point* getPoint(int i) = 0;
         virtual vector<Point *> getPoints() { return points; }
@@ -26,6 +29,7 @@ class drawable {
         Color col = {0, 0, 0};
         int value;
         int thickness = 1;
+        shape sh;
 };
 
 #endif // DRAWABLE_H

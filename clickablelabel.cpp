@@ -15,12 +15,21 @@ void ClickableLabel::mousePressEvent(QMouseEvent* event) {
     x = event->x() - (width() - 500) / 2.0;
     y = event->y() - (height() - 500) / 2.0;
     if(x >= 0 && x <= 499 && y >= 0 && y <= 499) {
-        if (event->button() == Qt::LeftButton) {
-            std::cout << "Left: " << x << ' ' << y << ' ' << std::endl;
-            emit clicked();
-        } else if(event->button() == Qt::RightButton) {
+        if(event->button() == Qt::RightButton) {
             std::cout << "Right: " << x << ' ' << y << ' ' << std::endl;
             emit options();
+        }
+        if(event->modifiers() == 67108864 && event->button() == Qt::LeftButton) {
+                    std::cout << "Radius click: " << x << ' ' << y << ' ' << std::endl;
+                    emit radius();
+                }
+        else if(event->modifiers() == 33554432 && event->button() == Qt::LeftButton) {
+                    std::cout << "Move click: " << x << ' ' << y << ' ' << event->modifiers() << std::endl;
+                    emit move();
+                }
+        else if (event->button() == Qt::LeftButton) {
+            std::cout << "Left: " << x << ' ' << y << ' ' << std::endl;
+            emit clicked();
         }
     }
 }

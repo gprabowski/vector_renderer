@@ -28,13 +28,19 @@ public:
 private slots:
     void label_clicked();
     void label_options();
+    void label_radius();
+    void label_move();
     void on_drawpolygon_clicked();
     void on_drawline_clicked();
     void on_drawcircle_clicked();
     void on_actionReset_triggered();
     void on_pushButton_clicked();
 
+    void on_actionSave_triggered();
+
 private:
+    drawable* edited_shape;
+    bool changingRadius = false;
     Color col = Color(0, 0, 0);
     mode _mode = line;
     bool from_start = true;
@@ -44,6 +50,7 @@ private:
     vector<drawable*> objects;
     Ui::MainWindow *ui;
     QImage _current;
+    bool movingPolygon = false;
     ClickableLabel* myLabel;
     Point* changingPoint = nullptr;
     EditDrawableDialog* dialog;

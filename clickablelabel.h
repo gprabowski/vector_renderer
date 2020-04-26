@@ -19,6 +19,8 @@ public:
 signals:
     void clicked();
     void options();
+    void radius();
+    void move();
 
 protected:
     int x;

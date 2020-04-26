@@ -8,7 +8,7 @@ polygon::polygon()
 {
     finished = false;
 }
-polygon::polygon(Color col){ this->col = col; finished = false;}
+polygon::polygon(Color col){ this->col = col; finished = false; sh = pol;}
 
 void polygon::addPoint(Point* p) {
     if(points.size() != 0)
@@ -48,3 +48,5 @@ void polygon::erase(ClickableLabel* lab) {
 }
 
 bool polygon::isFinished() { return finished; }
+
+

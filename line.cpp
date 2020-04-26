@@ -20,5 +20,6 @@ bool line::isFinished() {
 }
 
 line::line(Color col) {
+    sh = lin;
     this->col = col;
 }

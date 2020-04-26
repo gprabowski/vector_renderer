@@ -7,8 +7,12 @@
 #include <iostream>
 #include "editdrawabledialog.h"
 #include "polygon.h"
+#include "drawable.h"
+#include <nlohmann/json.hpp>
+#include <fstream>
 using std::cout;
 using std::endl;
+using json = nlohmann::json;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -18,6 +22,9 @@ MainWindow::MainWindow(QWidget *parent)
     myLabel = new ClickableLabel();
     connect(myLabel, &ClickableLabel::clicked, this, &MainWindow::label_clicked);
     connect(myLabel, &ClickableLabel::options, this, &MainWindow::label_options);
+    connect(myLabel, &ClickableLabel::radius, this, &MainWindow::label_radius);
+    connect(myLabel, &ClickableLabel::move, this, &MainWindow::label_move);
+
     myLabel->resize(500, 500);
     myLabel->setAlignment(Qt::AlignCenter);
     ui->verticalLayout_2->addWidget(myLabel);
@@ -139,6 +146,60 @@ void MainWindow::label_clicked() {
     }
 }
 
+void MainWindow::label_radius() {
+    Point c(myLabel->getX(), myLabel->getY());
+    if(changingRadius == false)
+        for(auto point : points) {
+            if(point.second->getShape() != drawable::cir)
+                continue;
+            if(distance(c, *point.first) < 10) {
+                cout << "changing" << endl;
+                changingRadius = true;
+                edited_shape = point.second;
+                break;
+            }
+        }
+    else {
+        changingRadius = false;
+        edited_shape->erase(myLabel);
+        Point* d = new Point(myLabel->getX(), myLabel->getY());
+        edited_shape->addPoint(d);
+        edited_shape->draw(myLabel);
+    }
+}
+
+void MainWindow::label_move() {
+    Point c(myLabel->getX(), myLabel->getY());
+    if(movingPolygon == false)
+        for(auto point : points) {
+            if(point.second->getShape() != drawable::pol)
+                continue;
+            if(distance(c, *point.first) < 10) {
+                cout << "movin pol" << endl;
+                movingPolygon = true;
+                edited_shape = point.second;
+                changingPoint = point.first;
+                break;
+            }
+        }
+    else {
+        movingPolygon = false;
+        edited_shape->erase(myLabel);
+        Point d(myLabel->getX(), myLabel->getY());
+        int x_change = d.x - changingPoint->x;
+        int y_change = d.y - changingPoint->y;
+        cout << "moving pol: " << x_change << ' ' << y_change << endl;
+        for(auto point: edited_shape->getPoints()) {
+            point->x += x_change;
+            point->y += y_change;
+        }
+        edited_shape->draw(myLabel);
+        changingPoint = nullptr;
+        edited_shape = nullptr;
+    }
+}
+
+
 
 void MainWindow::on_drawline_clicked()
 {
@@ -196,4 +257,20 @@ void MainWindow::on_pushButton_clicked()
             color.getRgb(&_r, &_g, &_b);
             col = Color(_r, _g, _b);
         }
+}
+
+void MainWindow::on_actionSave_triggered()
+{
+    json j;
+    for(auto object : objects) {
+        json a;
+        a["type"] = object->getShape();
+        for(auto point : object->getPoints()) {
+            a["points"].push_back({point->x, point->y});
+        }
+        a["color"] = {object->getColor().r, object->getColor().g, object->getColor().b};
+        j.push_back(a);
+    }
+    std::ofstream file("project.json");
+        file << j;
 }

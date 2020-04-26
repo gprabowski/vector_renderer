@@ -13,6 +13,7 @@ public:
     void draw(ClickableLabel* lab) override;
     void erase(ClickableLabel* lab) override;
     bool isFinished() override;
+
 private:
     double radius;
 };
