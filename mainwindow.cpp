@@ -10,6 +10,8 @@
 #include "drawable.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
+#include <QFileDialog>
+
 using std::cout;
 using std::endl;
 using json = nlohmann::json;
@@ -261,16 +263,86 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::on_actionSave_triggered()
 {
+    auto fileName = QFileDialog::getSaveFileName(this,
+            tr("Save Your Project"), "",
+            tr("Project File(*.json);;All Files (*)"));
     json j;
     for(auto object : objects) {
         json a;
-        a["type"] = object->getShape();
+        a["shape"] = object->getShape();
         for(auto point : object->getPoints()) {
             a["points"].push_back({point->x, point->y});
         }
         a["color"] = {object->getColor().r, object->getColor().g, object->getColor().b};
+        a["thickness"] = object->getThickness();
+        a["size"] = object->getPoints().size();
         j.push_back(a);
     }
-    std::ofstream file("project.json");
+    std::ofstream file(fileName.toStdString());
         file << j;
+}
+
+void MainWindow::on_actionOpen_triggered()
+{
+    this->on_actionReset_triggered();
+    auto fileName = QFileDialog::getOpenFileName(this,
+        tr("Open Image"), "/home/", tr("Image Files (*.json)"));
+    if(fileName.isEmpty())
+        return;
+    std::ifstream i(fileName.toStdString());
+    json j;
+    i >> j;
+    cout << j.size() << endl;
+    Color col2(0, 0, 0);
+    int size;
+    Point* p2;
+    for (auto& element : j) {
+      switch(element["shape"].get<int>()) {
+      case 0:
+          cout << "it's a circle" << endl;
+          col2 = Color(element["color"][0], element["color"][1], element["color"][2]);
+          current = new class circle(col2);
+          size = element["size"].get<int>();
+          for(auto point : element["points"]) {
+              p2 = new Point(point[0].get<int>(), point[1].get<int>());
+              current->addPoint(p2);
+              points.push_back(std::make_pair(p2, current));
+          }
+          current->setColor(col2);
+          current->setThickness(element["thickness"].get<int>());
+          current->draw(myLabel);
+          current = nullptr;
+          break;
+      case 1:
+          cout << "it's a polygon" << endl;
+          col2 = Color(element["color"][0], element["color"][1], element["color"][2]);
+          current = new class polygon(col2);
+          size = element["size"].get<int>();
+          for(auto point : element["points"]) {
+              p2 = new Point(point[0].get<int>(), point[1].get<int>());
+              current->addPoint(p2);
+              points.push_back(std::make_pair(p2, current));
+          }
+          current->setColor(col2);
+          current->setThickness(element["thickness"].get<int>());
+          current->draw(myLabel);
+          current = nullptr;
+          break;
+      case 2:
+          cout << "it's a line" << endl;
+          col2 = Color(element["color"][0], element["color"][1], element["color"][2]);
+          current = new class line(col2);
+          size = element["size"].get<int>();
+          for(auto point : element["points"]) {
+              p2 = new Point(point[0].get<int>(), point[1].get<int>());
+              current->addPoint(p2);
+              points.push_back(std::make_pair(p2, current));
+          }
+          current->setColor(col2);
+          current->setThickness(element["thickness"].get<int>());
+          current->draw(myLabel);
+          current = nullptr;
+          break;
+      }
+    }
 }

@@ -38,6 +38,8 @@ private slots:
 
     void on_actionSave_triggered();
 
+    void on_actionOpen_triggered();
+
 private:
     drawable* edited_shape;
     bool changingRadius = false;
