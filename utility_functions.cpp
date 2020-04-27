@@ -97,6 +97,18 @@ void drawMidpointCircle(int x, int y, double r, ClickableLabel* lab, Color col, 
 double determinant(Point a, Point b, Point c) {
     return a.x*b.y - a.x*c.y - a.y*b.x + a.y*c.x + b.x*c.y - b.y*c.x;
 }
+
+void drawPositive(Point a, Point b, Point c, Point d, ClickableLabel * lab, Color col) {
+    if(determinant(a, b, d) > 0 && determinant(a, c,  d) < 0)
+        lab->setPixel(d, col);
+}
+
+void drawNegative(Point a, Point b, Point c, Point d, ClickableLabel * lab, Color col) {
+    if(determinant(a, b, d) > 0 || determinant(a, c, d) < 0)
+            lab->setPixel(d, col);
+}
+
+
 void drawMidpointAngle(int x, int y, int x2, int y2, int x3, int y3,  double r, ClickableLabel* lab, Color col, bool fill) {
     int d = 1 - r;
     int _x = 0;
@@ -114,40 +126,31 @@ void drawMidpointAngle(int x, int y, int x2, int y2, int x3, int y3,  double r, 
             lab->setPixel(Point(x, i), col);
         }
     }
-    if(case1 && determinant(a, b, Point(_x + x, _y + y)) > 0 && determinant(a, c, Point(_x + x, _y + y)) < 0)
-        lab->setPixel(Point(_x + x, _y + y), col);
-    else if(!case1 && (determinant(a, b, Point(_x + x, _y + y)) > 0 || determinant(a, c, Point(_x + x, _y + y)) < 0))
-        lab->setPixel(Point(_x + x, _y + y), col);
-    if(r > 0) {
-        if(case1 && determinant(a, b, Point(x -_x, y + _y)) > 0 && determinant(a, c,  Point(x -_x, y + _y)) < 0)
-            lab->setPixel(Point(x -_x, y + _y), col);
-        else if(!case1 && (determinant(a, b, Point(x -_x, y + _y)) > 0 || determinant(a, c,  Point(x -_x, y + _y)) < 0))
-            lab->setPixel(Point(x -_x, y + _y), col);
-        if(case1 && determinant(a, b, Point(x + _x, y - _y)) > 0 && determinant(a, c, Point(x + _x, y - _y)) < 0)
-            lab->setPixel(Point(x + _x, y - _y), col);
-        else if(!case1 && (determinant(a, b, Point(x + _x, y - _y)) > 0 || determinant(a, c, Point(x + _x, y - _y)) < 0))
-            lab->setPixel(Point(x + _x, y - _y), col);
-        if(case1 && determinant(a, b, Point(x - _x, y - _y)) > 0 && determinant(a, c, Point(x - _x, y - _y)) < 0)
-            lab->setPixel(Point(x - _x, y - _y), col);
-        else if(!case1 && (determinant(a, b, Point(x - _x, y - _y)) > 0 || determinant(a, c, Point(x - _x, y - _y)) < 0))
-            lab->setPixel(Point(x - _x, y - _y), col);
-        if(case1 && determinant(a, b, Point(_y + x, _x + y)) > 0 && determinant(a, c, Point(_y + x, _x + y)) < 0)
-            lab->setPixel(Point(_y + x, _x + y), col);
-        else if(!case1 && (determinant(a, b, Point(_y + x, _x + y)) > 0 || determinant(a, c, Point(_y + x, _x + y)) < 0))
-            lab->setPixel(Point(_y + x, _x + y), col);
-        if(case1 && determinant(a, b, Point(x - _y, _x + y)) > 0 && determinant(a, c, Point(x - _y, _x + y)) < 0)
-            lab->setPixel(Point(x - _y, _x + y), col);
-        else if(!case1 && (determinant(a, b, Point(x - _y, _x + y)) > 0 || determinant(a, c, Point(x - _y, _x + y)) < 0))
-            lab->setPixel(Point(x - _y, _x + y), col);
-        if(case1 && determinant(a, b, Point(_y + x, y - _x)) > 0 && determinant(a, c, Point(_y + x, y - _x)) < 0)
-            lab->setPixel(Point(_y + x, y - _x), col);
-        else if(!case1 && (determinant(a, b, Point(_y + x, y - _x)) > 0 || determinant(a, c, Point(_y + x, y - _x)) < 0))
-            lab->setPixel(Point(_y + x, y - _x), col);
-        if(case1 && determinant(a, b, Point(x - _y, y - _x)) > 0 && determinant(a, c, Point(x - _y, y - _x)) < 0)
-            lab->setPixel(Point(x - _y, y - _x), col);
-        else if(!case1 && (determinant(a, b, Point(x - _y, y - _x)) > 0 || determinant(a, c, Point(x - _y, y - _x)) < 0))
-            lab->setPixel(Point(x - _y, y - _x), col);
+    if(case1) {
+        drawPositive(a, b, c, Point(_x + x, _y + y), lab, col);
+        if(r > 0) {
+            drawPositive(a, b, c, Point(x -_x, y + _y), lab, col);
+            drawPositive(a, b, c, Point(x + _x, y - _y), lab, col);
+            drawPositive(a, b, c, Point(x - _x, y - _y), lab, col);
+            drawPositive(a, b, c, Point(_y + x, _x + y), lab, col);
+            drawPositive(a, b, c, Point(x - _y, _x + y), lab, col);
+            drawPositive(a, b, c, Point(_y + x, y - _x), lab, col);
+            drawPositive(a, b, c, Point(x - _y, y - _x), lab, col);
+        }
     }
+    else if(!case1) {
+        drawNegative(a, b, c, Point(_x + x, _y + y), lab, col);
+        if(r > 0) {
+            drawNegative(a, b, c, Point(x -_x, y + _y), lab, col);
+            drawNegative(a, b, c, Point(x + _x, y - _y), lab, col);
+            drawNegative(a, b, c, Point(x - _x, y - _y), lab, col);
+            drawNegative(a, b, c, Point(_y + x, _x + y), lab, col);
+            drawNegative(a, b, c, Point(x - _y, _x + y), lab, col);
+            drawNegative(a, b, c, Point(_y + x, y - _x), lab, col);
+            drawNegative(a, b, c, Point(x - _y, y - _x), lab, col);
+        }
+    }
+
     while(_y > _x) {
         if(d < 0)
             d+= 2*_x + 3;
@@ -157,38 +160,28 @@ void drawMidpointAngle(int x, int y, int x2, int y2, int x3, int y3,  double r, 
             --_y;
         }
         ++_x;
-        if(case1 && determinant(a, b, Point(_x + x, _y + y)) > 0 && determinant(a, c, Point(_x + x, _y + y)) < 0)
-            lab->setPixel(Point(_x + x, _y + y), col);
-        else if(!case1 && (determinant(a, b, Point(_x + x, _y + y)) > 0 || determinant(a, c, Point(_x + x, _y + y)) < 0))
-            lab->setPixel(Point(_x + x, _y + y), col);
-        if(case1 && determinant(a, b, Point(x -_x, y + _y)) > 0 && determinant(a, c,  Point(x -_x, y + _y)) < 0)
-            lab->setPixel(Point(x -_x, y + _y), col);
-        else if(!case1 && (determinant(a, b, Point(x -_x, y + _y)) > 0 || determinant(a, c,  Point(x -_x, y + _y)) < 0))
-            lab->setPixel(Point(x -_x, y + _y), col);
-        if(case1 && determinant(a, b, Point(x + _x, y - _y)) > 0 && determinant(a, c, Point(x + _x, y - _y)) < 0)
-            lab->setPixel(Point(x + _x, y - _y), col);
-        else if(!case1 && (determinant(a, b, Point(x + _x, y - _y)) > 0 || determinant(a, c, Point(x + _x, y - _y)) < 0))
-            lab->setPixel(Point(x + _x, y - _y), col);
-        if(case1 && determinant(a, b, Point(x - _x, y - _y)) > 0 && determinant(a, c, Point(x - _x, y - _y)) < 0)
-            lab->setPixel(Point(x - _x, y - _y), col);
-        else if(!case1 && (determinant(a, b, Point(x - _x, y - _y)) > 0 || determinant(a, c, Point(x - _x, y - _y)) < 0))
-            lab->setPixel(Point(x - _x, y - _y), col);
-        if(case1 && determinant(a, b, Point(_y + x, _x + y)) > 0 && determinant(a, c, Point(_y + x, _x + y)) < 0)
-            lab->setPixel(Point(_y + x, _x + y), col);
-        else if(!case1 && (determinant(a, b, Point(_y + x, _x + y)) > 0 || determinant(a, c, Point(_y + x, _x + y)) < 0))
-            lab->setPixel(Point(_y + x, _x + y), col);
-        if(case1 && determinant(a, b, Point(x - _y, _x + y)) > 0 && determinant(a, c, Point(x - _y, _x + y)) < 0)
-            lab->setPixel(Point(x - _y, _x + y), col);
-        else if(!case1 && (determinant(a, b, Point(x - _y, _x + y)) > 0 || determinant(a, c, Point(x - _y, _x + y)) < 0))
-            lab->setPixel(Point(x - _y, _x + y), col);
-        if(case1 && determinant(a, b, Point(_y + x, y - _x)) > 0 && determinant(a, c, Point(_y + x, y - _x)) < 0)
-            lab->setPixel(Point(_y + x, y - _x), col);
-        else if(!case1 && (determinant(a, b, Point(_y + x, y - _x)) > 0 || determinant(a, c, Point(_y + x, y - _x)) < 0))
-            lab->setPixel(Point(_y + x, y - _x), col);
-        if(case1 && determinant(a, b, Point(x - _y, y - _x)) > 0 && determinant(a, c, Point(x - _y, y - _x)) < 0)
-            lab->setPixel(Point(x - _y, y - _x), col);
-        else if(!case1 && (determinant(a, b, Point(x - _y, y - _x)) > 0 || determinant(a, c, Point(x - _y, y - _x)) < 0))
-            lab->setPixel(Point(x - _y, y - _x), col);
+        if(case1) {
+            drawPositive(a, b, c, Point(_x + x, _y + y), lab, col);
+            drawPositive(a, b, c, Point(x -_x, y + _y), lab, col);
+            drawPositive(a, b, c, Point(x + _x, y - _y), lab, col);
+            drawPositive(a, b, c, Point(x - _x, y - _y), lab, col);
+            drawPositive(a, b, c, Point(_y + x, _x + y), lab, col);
+            drawPositive(a, b, c, Point(x - _y, _x + y), lab, col);
+            drawPositive(a, b, c, Point(_y + x, y - _x), lab, col);
+            drawPositive(a, b, c, Point(x - _y, y - _x), lab, col);
+
+        }
+        else if(!case1) {
+            drawNegative(a, b, c, Point(_x + x, _y + y), lab, col);
+            drawNegative(a, b, c, Point(x -_x, y + _y), lab, col);
+            drawNegative(a, b, c, Point(x + _x, y - _y), lab, col);
+            drawNegative(a, b, c, Point(x - _x, y - _y), lab, col);
+            drawNegative(a, b, c, Point(_y + x, _x + y), lab, col);
+            drawNegative(a, b, c, Point(x - _y, _x + y), lab, col);
+            drawNegative(a, b, c, Point(_y + x, y - _x), lab, col);
+            drawNegative(a, b, c, Point(x - _y, y - _x), lab, col);
+
+        }
 
         if(fill) {
             for(int i  = 0; i < _y; ++i) {
