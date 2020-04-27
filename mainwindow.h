@@ -22,7 +22,7 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
-    enum mode {line, circle, polygon};
+    enum mode {line, circle, polygon, angle};
     ~MainWindow();
 
 private slots:
@@ -39,6 +39,8 @@ private slots:
     void on_actionSave_triggered();
 
     void on_actionOpen_triggered();
+
+    void on_pushButton_2_clicked();
 
 private:
     drawable* edited_shape;

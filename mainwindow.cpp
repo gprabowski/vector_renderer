@@ -11,6 +11,7 @@
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <QFileDialog>
+#include "angle.h"
 
 using std::cout;
 using std::endl;
@@ -121,6 +122,14 @@ void MainWindow::label_clicked() {
                 points.push_back(std::make_pair(c, current));
                 from_start = false;
                 break;
+            case angle:
+                myLabel->setPixel(*c, col);
+                current = new class angle(col);
+                current->addPoint(c);
+                points.push_back(std::make_pair(c, current));
+                from_start = false;
+                break;
+
             }
         }
     }
@@ -207,6 +216,7 @@ void MainWindow::on_drawline_clicked()
 {
     cout << "mode changed to line" << endl;
     _mode = line;
+    ui->pushButton_2->setChecked(false);
     ui->drawline->setChecked(true);
     ui->drawcircle->setChecked(false);
     ui->drawpolygon->setChecked(false);
@@ -217,6 +227,7 @@ void MainWindow::on_drawcircle_clicked()
 {
     cout << "mode changed to circle" << endl;
     _mode = circle;
+    ui->pushButton_2->setChecked(false);
     ui->drawline->setChecked(false);
     ui->drawcircle->setChecked(true);
     ui->drawpolygon->setChecked(false);
@@ -227,6 +238,7 @@ void MainWindow::on_drawpolygon_clicked()
 {
     cout << "mode changed to polygon" << endl;
     _mode = polygon;
+    ui->pushButton_2->setChecked(false);
     ui->drawline->setChecked(false);
     ui->drawcircle->setChecked(false);
     ui->drawpolygon->setChecked(true);
@@ -345,4 +357,14 @@ void MainWindow::on_actionOpen_triggered()
           break;
       }
     }
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    cout << "mode changed to angle" << endl;
+    _mode = angle;
+    ui->drawline->setChecked(false);
+    ui->drawcircle->setChecked(false);
+    ui->drawpolygon->setChecked(false);
+    ui->pushButton->setChecked(true);
 }
