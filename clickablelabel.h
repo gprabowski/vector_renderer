@@ -13,6 +13,9 @@ public:
     explicit ClickableLabel(QWidget* parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
     int getX();
     int getY();
+    void setup();
+    void update();
+    QImage getImage();
     void setPixel(Point p, Color val);
     ~ClickableLabel();
 
@@ -23,6 +26,8 @@ signals:
     void move();
 
 protected:
+    QImage image;
+    uchar* b_img;
     int x;
     int y;
     void mousePressEvent(QMouseEvent* event);

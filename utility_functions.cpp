@@ -36,6 +36,7 @@ void drawMidpointLine(int x1, int y1, int x2, int y2, Color col, ClickableLabel*
         else
             drawMidpointCircle(y, x, (n - 1) / 2, lab, col, true);
     }
+    lab->update();
 }
 
 void drawMidpointCircle(int x, int y, double r, ClickableLabel* lab, Color col, bool fill) {
@@ -92,6 +93,7 @@ void drawMidpointCircle(int x, int y, double r, ClickableLabel* lab, Color col, 
             }
         }
     }
+    lab->update();
 }
 
 double determinant(Point a, Point b, Point c) {

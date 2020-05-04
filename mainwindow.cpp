@@ -38,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent)
     color_view->fill(QColor(col.r, col.g, col.b));
     ui->color_label->setPixmap(*color_view);
     myLabel->setPixmap(QPixmap::fromImage(_current));
+    myLabel->setup();
 }
 
 MainWindow::~MainWindow()

@@ -35,14 +35,20 @@ void ClickableLabel::mousePressEvent(QMouseEvent* event) {
 }
 int ClickableLabel::getX() {return x;}
 int ClickableLabel::getY() {return y;}
-
+QImage ClickableLabel::getImage() { return image; }
 void ClickableLabel::setPixel(Point p, Color val) {
     if(p.x < 500 && p.x >= 0 && p.y < 500 && p.y >= 0) {
-        auto image = this->pixmap()->toImage();
-        auto b_image = image.bits();
-        b_image[p.x * 4 + p.y * 500 * 4] = val.b;
-        b_image[p.x * 4 + p.y * 500 * 4 + 1] = val.g;
-        b_image[p.x * 4 + p.y * 500 * 4 + 2] = val.r;
-        this->setPixmap(QPixmap::fromImage(image));
+        b_img[p.x * 4 + p.y * 500 * 4] = val.b;
+        b_img[p.x * 4 + p.y * 500 * 4 + 1] = val.g;
+        b_img[p.x * 4 + p.y * 500 * 4 + 2] = val.r;
     }
+}
+
+void ClickableLabel::setup() {
+    image = this->pixmap()->toImage();
+    b_img = image.bits();
+}
+
+void ClickableLabel::update() {
+    this->setPixmap(QPixmap::fromImage(image));
 }
