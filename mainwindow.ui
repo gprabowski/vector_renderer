@@ -63,7 +63,7 @@
        <layout class="QVBoxLayout" name="verticalLayout_2"/>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,1,1,0,0,2,0,0">
+       <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,1,1,0,0,0,0,2,0,0">
         <item>
          <spacer name="verticalSpacer">
           <property name="orientation">
@@ -114,6 +114,26 @@
          <widget class="QPushButton" name="pushButton_2">
           <property name="text">
            <string>Angle</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_3">
+          <property name="text">
+           <string>Rectangle</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_4">
+          <property name="text">
+           <string>Changing</string>
           </property>
           <property name="checkable">
            <bool>true</bool>
@@ -392,7 +412,7 @@ Color</string>
      <x>0</x>
      <y>0</y>
      <width>700</width>
-     <height>24</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFIle">

@@ -12,7 +12,7 @@ class drawable {
     public:
         drawable() {}
         ~drawable() {}
-        enum shape {cir, pol, lin, ang};
+        enum shape {cir, pol, lin, ang, rec};
         shape getShape() {return sh;}
         virtual void addPoint(Point* p) = 0;
         virtual Point* getPoint(int i) = 0;

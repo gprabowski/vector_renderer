@@ -12,6 +12,9 @@
 #include <fstream>
 #include <QFileDialog>
 #include "angle.h"
+#include "rectangle.h"
+#include "filldialog.h"
+#include "edge.h"
 
 using std::cout;
 using std::endl;
@@ -27,6 +30,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(myLabel, &ClickableLabel::options, this, &MainWindow::label_options);
     connect(myLabel, &ClickableLabel::radius, this, &MainWindow::label_radius);
     connect(myLabel, &ClickableLabel::move, this, &MainWindow::label_move);
+    connect(myLabel, &ClickableLabel::edge_move, this, &MainWindow::label_edge_move);
+    connect(myLabel, &ClickableLabel::fill, this, &MainWindow::label_fill);
+
+
 
     myLabel->resize(500, 500);
     myLabel->setAlignment(Qt::AlignCenter);
@@ -46,6 +53,43 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::label_fill() {
+    bool close = false;
+    Point c(myLabel->getX(), myLabel->getY());
+    drawable *d;
+    std::vector<Edge> AET;
+    if(from_start) {
+        for(auto p : points) {
+            if(c.distance_small(*p.first) && p.second->getShape() == drawable::pol) {
+                close = true;
+                d = p.second;
+                break;
+            }
+        }
+        if(close) {
+            auto _dialog = new FillDialog(this, d->getColor());
+            _dialog->exec();
+            if(!_dialog->isCanceled()) {
+                cout << "FILLING WITH COLOR" << endl;
+                std::vector<std::vector<Edge>> ET(reinterpret_cast<class polygon*>(d)->getYmax() - reinterpret_cast<class polygon*>(d)->getYmin());
+                for(int i = 0; i < (int)d->getPoints().size(); ++i){
+                    Edge e(*(d->getPoint(i)), *(d->getPoint((i + 1) % d->getPoints().size())));
+                    ET[e.getYmin() - reinterpret_cast<class polygon*>(d)->getYmin()].push_back(e);
+                    cout << "putting an edge into: " << e.getYmin() << "which now is of size" <<
+                            ET[e.getYmin() - reinterpret_cast<class polygon*>(d)->getYmin()].size() << endl;
+                }
+                for(auto& v : ET) {
+                    sort(v.begin(), v.end());
+                    for(auto& ed : v)
+                        AET.push_back(ed);
+                    v.clear();
+                    cout << "SIZE" << AET.size() << endl;
+                }
+            }
+            delete _dialog;
+        }
+    }
+}
 void MainWindow::label_options() {
     bool close = false;
     Point c(myLabel->getX(), myLabel->getY());
@@ -117,7 +161,7 @@ void MainWindow::label_clicked() {
                 from_start = false;
                 break;
             case polygon:
-                myLabel->setPixel(*c, col);
+                drawMidpointCircle(c->x, c->y, 1, myLabel, col, true);
                 current = new class polygon(col);
                 current->addPoint(c);
                 points.push_back(std::make_pair(c, current));
@@ -130,7 +174,15 @@ void MainWindow::label_clicked() {
                 points.push_back(std::make_pair(c, current));
                 from_start = false;
                 break;
-
+             case rectangle:
+                myLabel->setPixel(*c, col);
+                current = new class rectangle(col);
+                current->addPoint(c);
+                points.push_back(std::make_pair(c, current));
+                from_start = false;
+                break;
+             case changing:
+                break;
             }
         }
     }
@@ -180,6 +232,79 @@ void MainWindow::label_radius() {
     }
 }
 
+void MainWindow::label_edge_move() {
+    cout << "Executing edge move" << endl;
+    Point c(myLabel->getX(), myLabel->getY());
+    if(rec_change == nothing){
+        for(auto point : points) {
+            if(point.second->getShape() != drawable::rec)
+                continue;
+            //CHECK IF ITS UP
+            if(abs(c.y - point.second[0].getPoint(0) -> y) < 10){
+                if(c.x > point.second[0].getPoint(0)->x && c.x < point.second[0].getPoint(1)->x){
+                    rec_change = up;
+                    edited_shape = point.second;
+                }
+            }
+            if(abs(c.x - point.second[0].getPoint(1) -> x) < 10){
+                if(c.y > point.second[0].getPoint(0)->y && c.y < point.second[0].getPoint(1)->y){
+                    rec_change = right;
+                    edited_shape = point.second;
+                }
+            }
+            if(abs(c.y - point.second[0].getPoint(1) -> y) < 10){
+                if(c.x > point.second[0].getPoint(0)->x && c.x < point.second[0].getPoint(1)->x){
+                    rec_change = down;
+                    edited_shape = point.second;
+                }
+            }
+            if(abs(c.x - point.second[0].getPoint(0) -> x) < 10){
+                if(c.y > point.second[0].getPoint(0)->y && c.y < point.second[0].getPoint(1)->y){
+                    rec_change = left;
+                    edited_shape = point.second;
+                }
+            }
+
+            }
+        }
+    else {
+        switch(rec_change) {
+        case up:
+            cout << rec_change << endl;
+            edited_shape->erase(myLabel);
+            edited_shape[0].getPoint(0)->y = c.y;
+            edited_shape->draw(myLabel);
+            edited_shape = nullptr;
+            rec_change = nothing;
+            break;
+        case right:
+            cout << rec_change << endl;
+            edited_shape->erase(myLabel);
+            edited_shape[0].getPoint(1)->x = c.x;
+            edited_shape->draw(myLabel);
+            edited_shape = nullptr;
+            rec_change = nothing;
+            break;
+        case down:
+            cout << rec_change << endl;
+            edited_shape->erase(myLabel);
+            edited_shape[0].getPoint(1)->y = c.y;
+            edited_shape->draw(myLabel);
+            edited_shape = nullptr;
+            rec_change = nothing;
+            break;
+        case left:
+            cout << rec_change << endl;
+            edited_shape->erase(myLabel);
+            edited_shape[0].getPoint(0)->x = c.x;
+            edited_shape->draw(myLabel);
+            edited_shape = nullptr;
+            rec_change = nothing;
+            break;
+        }
+    }
+}
+
 void MainWindow::label_move() {
     Point c(myLabel->getX(), myLabel->getY());
     if(movingPolygon == false)
@@ -221,6 +346,10 @@ void MainWindow::on_drawline_clicked()
     ui->drawline->setChecked(true);
     ui->drawcircle->setChecked(false);
     ui->drawpolygon->setChecked(false);
+    ui->pushButton_3->setChecked(false);
+    ui->pushButton_4->setChecked(false);
+
+
 }
 
 
@@ -232,6 +361,9 @@ void MainWindow::on_drawcircle_clicked()
     ui->drawline->setChecked(false);
     ui->drawcircle->setChecked(true);
     ui->drawpolygon->setChecked(false);
+    ui->pushButton_3->setChecked(false);
+    ui->pushButton_4->setChecked(false);
+
 
 }
 
@@ -243,7 +375,24 @@ void MainWindow::on_drawpolygon_clicked()
     ui->drawline->setChecked(false);
     ui->drawcircle->setChecked(false);
     ui->drawpolygon->setChecked(true);
+    ui->pushButton_3->setChecked(false);
+    ui->pushButton_4->setChecked(false);
+
 }
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    cout << "mode changed to rectangle" << endl;
+    _mode = rectangle;
+    ui->pushButton_2->setChecked(false);
+    ui->drawline->setChecked(false);
+    ui->drawcircle->setChecked(false);
+    ui->drawpolygon->setChecked(false);
+    ui->pushButton_3->setChecked(true);
+    ui->pushButton_4->setChecked(false);
+
+}
+
 
 void MainWindow::on_actionReset_triggered()
 {
@@ -367,5 +516,23 @@ void MainWindow::on_pushButton_2_clicked()
     ui->drawline->setChecked(false);
     ui->drawcircle->setChecked(false);
     ui->drawpolygon->setChecked(false);
-    ui->pushButton->setChecked(true);
+    ui->pushButton_3->setChecked(false);
+    ui->pushButton_4->setChecked(false);
+    ui->pushButton_2->setChecked(true);
+    ui->pushButton->setChecked(false);
+
+}
+
+
+void MainWindow::on_pushButton_4_clicked()
+{
+    cout << "mode changed to changing" << endl;
+    _mode = changing;
+    ui->drawline->setChecked(false);
+    ui->drawcircle->setChecked(false);
+    ui->drawpolygon->setChecked(false);
+    ui->pushButton_3->setChecked(false);
+    ui->pushButton_2->setChecked(false);
+    ui->pushButton_4->setChecked(true);
+    ui->pushButton->setChecked(false);
 }

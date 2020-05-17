@@ -24,6 +24,8 @@ signals:
     void options();
     void radius();
     void move();
+    void fill();
+    void edge_move();
 
 protected:
     QImage image;

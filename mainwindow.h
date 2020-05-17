@@ -22,14 +22,17 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
-    enum mode {line, circle, polygon, angle};
+    enum mode {line, circle, polygon, angle, rectangle, changing};
+    enum rectangle_changing{ nothing, up, right, down, left};
     ~MainWindow();
 
 private slots:
     void label_clicked();
     void label_options();
     void label_radius();
+    void label_edge_move();
     void label_move();
+    void label_fill();
     void on_drawpolygon_clicked();
     void on_drawline_clicked();
     void on_drawcircle_clicked();
@@ -42,9 +45,14 @@ private slots:
 
     void on_pushButton_2_clicked();
 
+    void on_pushButton_3_clicked();
+
+    void on_pushButton_4_clicked();
+
 private:
     drawable* edited_shape;
     bool changingRadius = false;
+    rectangle_changing rec_change = nothing;
     Color col = Color(0, 0, 0);
     mode _mode = line;
     bool from_start = true;

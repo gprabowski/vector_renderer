@@ -19,12 +19,15 @@ SOURCES += \
     angle.cpp \
     circle.cpp \
     clickablelabel.cpp \
+    edge.cpp \
     editdrawabledialog.cpp \
+    filldialog.cpp \
     line.cpp \
     main.cpp \
     mainwindow.cpp \
     point.cpp \
     polygon.cpp \
+    rectangle.cpp \
     utility_functions.cpp
 
 HEADERS += \
@@ -33,15 +36,19 @@ HEADERS += \
     clickablelabel.h \
     color.h \
     drawable.h \
+    edge.h \
     editdrawabledialog.h \
+    filldialog.h \
     line.h \
     mainwindow.h \
     point.h \
     polygon.h \
+    rectangle.h \
     utility_func.h
 
 FORMS += \
     editdrawabledialog.ui \
+    filldialog.ui \
     mainwindow.ui
 
 # Default rules for deployment.

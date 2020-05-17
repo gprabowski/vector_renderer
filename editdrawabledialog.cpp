@@ -1,6 +1,6 @@
 #include "editdrawabledialog.h"
 #include "ui_editdrawabledialog.h"
-#import <qcolordialog.h>
+#include <qcolordialog.h>
 EditDrawableDialog::EditDrawableDialog(QWidget *parent, Color col, int thickness) :
     QDialog(parent),
     ui(new Ui::EditDrawableDialog),

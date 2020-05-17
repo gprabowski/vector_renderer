@@ -12,8 +12,16 @@ public:
     void draw(ClickableLabel* lab) override;
     void erase(ClickableLabel* lab) override;
     bool isFinished() override;
+    bool isFilled();
+    void setFilled(bool val);
+    int getYmax();
+    int getYmin();
+
 private:
     bool finished;
+    int ymin;
+    int ymax;
+    bool filled = false;
 };
 
 #endif // POLYGON_H
