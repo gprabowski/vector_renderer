@@ -33,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(myLabel, &ClickableLabel::move, this, &MainWindow::label_move);
     connect(myLabel, &ClickableLabel::edge_move, this, &MainWindow::label_edge_move);
     connect(myLabel, &ClickableLabel::fill, this, &MainWindow::label_fill);
-
+    connect(myLabel, &ClickableLabel::clip, this, &MainWindow::label_clip);
 
 
     myLabel->resize(500, 500);
@@ -52,6 +52,54 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::label_clip() {
+    bool close = false;
+    Point c(myLabel->getX(), myLabel->getY());
+    drawable *d;
+    std::vector<Edge> AET;
+    if(from_start) {
+        for(auto p : points) {
+            if(c.distance_small(*p.first) && p.second->getShape() == drawable::pol) {
+                close = true;
+                d = p.second;
+                break;
+            }
+        }
+
+        if(close) {
+            if(!reinterpret_cast<class polygon* >(d)->isConvex()) {
+                QMessageBox msgBox;
+                msgBox.setWindowTitle("Usage");
+                msgBox.setText("This polygon is <b>NOT</b> convex");
+                msgBox.setInformativeText("\n\n and thus not suitable for clipping into");
+                msgBox.setStandardButtons(QMessageBox::Close);
+                msgBox.setDefaultButton(QMessageBox::Close);
+                int ret = msgBox.exec();
+            } else {
+                from_start = false;
+                edited_shape = d;
+            }
+        }
+    } else {
+        // not from start
+        for(auto p : points) {
+            if(c.distance_small(*p.first) && p.second->getShape() == drawable::pol) {
+                close = true;
+                d = p.second;
+                break;
+            }
+        }
+        if(close) {
+            reinterpret_cast<class polygon*>(edited_shape)->setClippedShape(reinterpret_cast<class polygon*>(d));
+            reinterpret_cast<class polygon*>(edited_shape)->setClipper(true);
+            edited_shape->setColor(Color(255, 0, 0));
+            d->setColor(Color(0, 255, 0));
+            edited_shape->draw(myLabel);
+            d->draw(myLabel);
+        }
+    }
 }
 
 void MainWindow::label_fill() {
@@ -564,7 +612,8 @@ void MainWindow::on_actionUsage_triggered()
                               "Left click to move entire circle \n\n"
                               "Alt + left click to change Rectangle's side \n\n"
                               "Right click to change color/thickness \n\n"
-                              "Ctr + right click to fill with texture/solid \n\n");
+                              "Ctr + right click to fill with texture/solid \n\n"
+                              "Alt + right click to clip one polygon to another");
     msgBox.setStandardButtons(QMessageBox::Close);
     msgBox.setDefaultButton(QMessageBox::Close);
     int ret = msgBox.exec();

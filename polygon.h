@@ -21,9 +21,14 @@ public:
     void setYmin(int val) { ymin = val; };
     void setImg(QImage i) { img = i; }
     void fill(Color col, ClickableLabel* myLabel);
+    bool isConvex();
+    void setClipper(bool val) {clipper = val;}
+    void setClippedShape(polygon* p) {clippedShape = p;}
 
 private:
     QImage img;
+    bool clipper = false;
+    polygon* clippedShape = nullptr;
     fillType filled = absent;
     bool finished;
     int ymin;

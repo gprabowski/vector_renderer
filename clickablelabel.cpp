@@ -19,6 +19,10 @@ void ClickableLabel::mousePressEvent(QMouseEvent* event) {
             std::cout << "Fill click: " << x << ' ' << y << ' ' << std::endl;
             emit fill();
         }
+        else if(event->modifiers() == Qt::AltModifier && event->button() == Qt::RightButton) {
+            std::cout << "Clip click: " << x << ' ' << y << ' ' << std::endl;
+            emit clip();
+        }
         else if(event->button() == Qt::RightButton) {
             std::cout << "Right: " << x << ' ' << y << ' ' << std::endl;
             emit options();

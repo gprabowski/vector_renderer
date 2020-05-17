@@ -221,3 +221,8 @@ Color getColorFromImg(int x, int y, QImage img) {
     b = ptr[(x%w)*4 + (y%h)*w*4 + 2];
     return Color(b, g, r);
 }
+
+double cross_product(Point a, Point b, Point c) {
+    return (a.x - b.x) * (c.y - b.y) - (a.y - b.y) * (c.x - b.x);
+}
+

@@ -9,4 +9,5 @@ double distance(Point a, Point b);
 void drawPositive(Point a, Point b, Point c, Point d, ClickableLabel * lab, Color col);
 void drawNegative(Point a, Point b, Point c, Point d, ClickableLabel * lab, Color col);
 Color getColorFromImg(int x, int y, QImage img);
+double cross_product(Point a, Point b, Point c);
 #endif // UTILITY_FUNC_H

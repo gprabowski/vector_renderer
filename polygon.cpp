@@ -129,3 +129,15 @@ void polygon::fill(Color col, ClickableLabel* myLabel) {
         }
             myLabel->update();
 }
+
+bool polygon::isConvex() {
+    bool pos = false, neg = false;
+    for(int i = 0; i < (int)points.size(); ++i) {
+        if(cross_product(*points[i], *points[(i + 1) % points.size()], *points[(i + 2) % points.size()]) > 0)
+            pos = true;
+        else if(cross_product(*points[i], *points[(i + 1) % points.size()], *points[(i + 2) % points.size()]) < 0)
+            neg = true;
+        if(pos&&neg) return false;
+    }
+    return true;
+}

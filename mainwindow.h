@@ -33,6 +33,7 @@ private slots:
     void label_edge_move();
     void label_move();
     void label_fill();
+    void label_clip();
     void on_drawpolygon_clicked();
     void on_drawline_clicked();
     void on_drawcircle_clicked();

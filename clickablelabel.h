@@ -25,6 +25,7 @@ signals:
     void radius();
     void move();
     void fill();
+    void clip();
     void edge_move();
 
 protected:
