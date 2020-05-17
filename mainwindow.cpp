@@ -15,6 +15,7 @@
 #include "rectangle.h"
 #include "filldialog.h"
 #include "edge.h"
+#import <qmessagebox.h>
 
 using std::cout;
 using std::endl;
@@ -69,24 +70,16 @@ void MainWindow::label_fill() {
         if(close) {
             auto _dialog = new FillDialog(this, d->getColor());
             _dialog->exec();
-            if(!_dialog->isCanceled()) {
-                cout << "FILLING WITH COLOR" << endl;
-                std::vector<std::vector<Edge>> ET(reinterpret_cast<class polygon*>(d)->getYmax() - reinterpret_cast<class polygon*>(d)->getYmin());
-                for(int i = 0; i < (int)d->getPoints().size(); ++i){
-                    Edge e(*(d->getPoint(i)), *(d->getPoint((i + 1) % d->getPoints().size())));
-                    ET[e.getYmin() - reinterpret_cast<class polygon*>(d)->getYmin()].push_back(e);
-                    cout << "putting an edge into: " << e.getYmin() << "which now is of size" <<
-                            ET[e.getYmin() - reinterpret_cast<class polygon*>(d)->getYmin()].size() << endl;
-                }
-                for(auto& v : ET) {
-                    sort(v.begin(), v.end());
-                    for(auto& ed : v)
-                        AET.push_back(ed);
-                    v.clear();
-                    cout << "SIZE" << AET.size() << endl;
+            if(!_dialog->isCanceled()){
+                if(_dialog->isSolid()) {
+                    reinterpret_cast<class polygon*>(d)->setFilled(polygon::solid, _dialog->getColor());
+                    reinterpret_cast<class polygon*>(d)->fill(_dialog->getColor(), myLabel);
+                } else {
+                    reinterpret_cast<class polygon*>(d)->setFilled(polygon::pattern, _dialog->getColor());
+                    reinterpret_cast<class polygon*>(d)->setImg(QPixmap(_dialog->getFilename()).toImage());
+                    reinterpret_cast<class polygon*>(d)->fill(_dialog->getColor(), myLabel);
                 }
             }
-            delete _dialog;
         }
     }
 }
@@ -108,6 +101,13 @@ void MainWindow::label_options() {
             if(!dialog->isCanceled()) {
                 if(dialog->shouldDelete()) {
                     d->erase(myLabel);
+                    auto it = objects.begin();
+                    while(it != objects.end()) {
+                        if(d == (*it))
+                            break;
+                        ++it;
+                    }
+                    objects.erase(it);
                     unsigned long i;
                     vector<Point *> del = d->getPoints();
                     Point* first = del[0];
@@ -307,25 +307,42 @@ void MainWindow::label_edge_move() {
 
 void MainWindow::label_move() {
     Point c(myLabel->getX(), myLabel->getY());
-    if(movingPolygon == false)
+    if(movingPolygon == false && movingRectangle == false)
         for(auto point : points) {
-            if(point.second->getShape() != drawable::pol)
+            if(point.second->getShape() != drawable::pol && point.second->getShape() != drawable::rec)
                 continue;
             if(distance(c, *point.first) < 10) {
-                cout << "movin pol" << endl;
-                movingPolygon = true;
-                edited_shape = point.second;
-                changingPoint = point.first;
-                break;
+                if(point.second->getShape() == drawable::pol) {
+                    cout << "movin pol" << endl;
+                    movingPolygon = true;
+                    edited_shape = point.second;
+                    changingPoint = point.first;
+                    break;
+                }
+                else {
+                    cout << "movin rec" << endl;
+                    movingRectangle = true;
+                    edited_shape = point.second;
+                    changingPoint = point.first;
+                    break;
+                }
             }
         }
     else {
-        movingPolygon = false;
         edited_shape->erase(myLabel);
         Point d(myLabel->getX(), myLabel->getY());
         int x_change = d.x - changingPoint->x;
         int y_change = d.y - changingPoint->y;
-        cout << "moving pol: " << x_change << ' ' << y_change << endl;
+        if(movingPolygon) {
+            movingPolygon = false;
+            reinterpret_cast<class polygon*>(edited_shape)->setYmax(reinterpret_cast<class polygon*>(edited_shape)->getYmax() + y_change);
+            reinterpret_cast<class polygon*>(edited_shape)->setYmin(reinterpret_cast<class polygon*>(edited_shape)->getYmin() + y_change);
+            cout << "moving pol: " << x_change << ' ' << y_change << endl;
+        }
+        if(movingRectangle) {
+            movingRectangle = false;
+            cout << "moving rec: " << x_change << ' ' << y_change << endl;
+        }
         for(auto point: edited_shape->getPoints()) {
             point->x += x_change;
             point->y += y_change;
@@ -535,4 +552,20 @@ void MainWindow::on_pushButton_4_clicked()
     ui->pushButton_2->setChecked(false);
     ui->pushButton_4->setChecked(true);
     ui->pushButton->setChecked(false);
+}
+
+void MainWindow::on_actionUsage_triggered()
+{
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Usage");
+    msgBox.setText("<b>How to use this program.</b>");
+    msgBox.setInformativeText("Shift + left click to move entire polygon/rectangle \n\n"
+                              "Control + left click to change circle radius \n\n"
+                              "Left click to move entire circle \n\n"
+                              "Alt + left click to change Rectangle's side \n\n"
+                              "Right click to change color/thickness \n\n"
+                              "Ctr + right click to fill with texture/solid \n\n");
+    msgBox.setStandardButtons(QMessageBox::Close);
+    msgBox.setDefaultButton(QMessageBox::Close);
+    int ret = msgBox.exec();
 }

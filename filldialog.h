@@ -15,6 +15,7 @@ class FillDialog : public QDialog
 public:
     explicit FillDialog(QWidget *parent = nullptr, Color col = Color(0,0,0));
     Color getColor();
+    QString getFilename();
     bool isSolid();
     bool isCanceled();
     ~FillDialog();
@@ -35,6 +36,7 @@ private slots:
 private:
     Color col;
     bool solid = true;
+    QString fileName;
     bool cancel = false;
     Ui::FillDialog *ui;
 };

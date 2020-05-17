@@ -2,19 +2,26 @@
 
 
 
-Edge::direction Edge::getDir() { return dir; }
+Edge::direction Edge::getDir() const{ return dir; }
 void Edge::setDir(direction d) { dir = d; }
 Edge::Edge(Point a, Point b) {
-    int xmax = std::max(a.x, b.x);
-    x = std::min(a.x, b.x);
+    xmax = std::max(a.x, b.x);
+    int xmin = std::min(a.x, b.x);
+    if(a.y < b.y)
+        x = b.x;
+    else
+        x = a.x;
     ymin = std::min(a.y, b.y);
     ymax = std::max(a.y, b.y);
-    numerator = xmax - x;
+    if(x == xmin) dir = right;
+    else dir = left;
+    numerator = xmax - xmin;
     increment = denominator = ymax - ymin;
 }
 void Edge::makeStep() {
-    if((increment += numerator) > denominator) {
-        ++x;
+    increment += numerator;
+    while(increment > denominator) {
+        dir == right ? ++x : --x;
         increment -= denominator;
     }
 }
@@ -23,15 +30,49 @@ bool Edge::operator< (const Edge& edge) const{
     return x < edge.getX();
 }
 
+Edge& Edge::operator=(const Edge& e) {
+    ymax = e.getYmax();
+    ymin = e.getYmin();
+    increment = e.getIncrement();
+    x = e.getX();
+    xmax = e.getXmax();
+    numerator = e.getNumerator();
+    denominator = e.getDenominator();
+    dir = e.getDir();
+    return *this;
+}
 
+Edge::Edge(const Edge& e) {
+    this->ymax = e.getYmax();
+    this->ymin = e.getYmin();
+    this->increment = e.getIncrement();
+    this->x = e.getX();
+    this->xmax = e.getXmax();
+    this->numerator = e.getNumerator();
+    this->denominator = e.getDenominator();
+    this->dir = e.getDir();
+}
 
 //GETTERS AND SETTERS
-int Edge::getYmax() { return ymax; }
+Edge::Edge(Edge&& e){
+    this->ymax = e.getYmax();
+    this->ymin = e.getYmin();
+    this->increment = e.getIncrement();
+    this->x = e.getX();
+    this->xmax = e.getXmax();
+    this->numerator = e.getNumerator();
+    this->denominator = e.getDenominator();
+    this->dir = e.getDir();
+}
+
+int Edge::getXmax() const{ return xmax; }
+int Edge::getYmax() const { return ymax; }
 void Edge::setYmax(int y) { ymax = y; }
-int Edge::getYmin() { return ymin; }
-double Edge::getX() const { return x; }
+int Edge::getYmin() const{ return ymin; }
+double Edge::getX() const { return this->x; }
 void Edge::setX(double x) {this->x = x;}
-int Edge::getNumerator() { return numerator; }
+double Edge::getIncrement() const {return increment; }
+int Edge::getNumerator() const { return numerator; }
 void Edge::setNumerator(int num) { numerator = num; }
 void Edge::setDenominator(int num) { denominator = num; }
-int Edge::getDenominator() { return denominator; }
+int Edge::getDenominator() const { return denominator; }

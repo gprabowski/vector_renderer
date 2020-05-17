@@ -37,7 +37,7 @@ void FillDialog::on_pushButton_3_clicked()
 
 void FillDialog::on_pushButton_clicked()
 {
-    auto fileName = QFileDialog::getOpenFileName(this,
+    fileName = QFileDialog::getOpenFileName(this,
         tr("Open Image"), "/home/", tr("Image Files (*.jpg)"));
     if(fileName.isEmpty())
         return;
@@ -71,5 +71,5 @@ void FillDialog::on_pushButton_4_clicked()
 }
 
 bool FillDialog::isSolid() { return solid; }
-
+QString FillDialog::getFilename() { return fileName; }
 

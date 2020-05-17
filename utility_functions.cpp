@@ -210,3 +210,14 @@ void drawMidpointAngle(int x, int y, int x2, int y2, int x3, int y3,  double r, 
 double distance(Point a, Point b) {
     return sqrt((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y));
 }
+
+Color getColorFromImg(int x, int y, QImage img) {
+    auto ptr = img.bits();
+    auto w = img.width();
+    auto h = img.height();
+    int r, g, b;
+    r = ptr[(x%w)*4 + (y%h)*w*4];
+    g = ptr[(x%w)*4 + (y%h)*w*4 + 1];
+    b = ptr[(x%w)*4 + (y%h)*w*4 + 2];
+    return Color(b, g, r);
+}

@@ -6,27 +6,34 @@ class Edge
 {
 public:
     Edge();
+    Edge(const Edge& e);
+    Edge(Edge&& e);
+    ~Edge() {};
     enum direction{right, left};
     Edge(Point a, Point b);
-    int getYmax();
+    int getYmax() const;
     void setYmax(int y);
-    int getYmin();
+    int getYmin() const;
     double getX() const;
     void setX(double x);
-    direction getDir();
+    direction getDir() const;
     void setDir(direction d);
     void makeStep();
-    int getNumerator();
+    int getNumerator() const;
     void setNumerator(int num);
+    int getXmax() const;
+    double getIncrement() const;
     void setDenominator(int num);
-    int getDenominator();
+    int getDenominator() const;
     bool operator< (const Edge& edge) const;
+    Edge& operator=(const Edge& e);
 
 private:
     int ymax;
     int ymin;
     double increment;
     double x;
+    int xmax;
     int numerator;
     int denominator;
     direction dir;

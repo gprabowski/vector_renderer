@@ -49,6 +49,8 @@ private slots:
 
     void on_pushButton_4_clicked();
 
+    void on_actionUsage_triggered();
+
 private:
     drawable* edited_shape;
     bool changingRadius = false;
@@ -63,6 +65,7 @@ private:
     Ui::MainWindow *ui;
     QImage _current;
     bool movingPolygon = false;
+    bool movingRectangle = false;
     ClickableLabel* myLabel;
     Point* changingPoint = nullptr;
     EditDrawableDialog* dialog;
