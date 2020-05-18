@@ -15,7 +15,8 @@
 #include "rectangle.h"
 #include "filldialog.h"
 #include "edge.h"
-#import <qmessagebox.h>
+#include "borderfilldialog.h"
+#include <qmessagebox.h>
 
 using std::cout;
 using std::endl;
@@ -227,6 +228,8 @@ void MainWindow::label_clicked() {
                 points.push_back(std::make_pair(c, current));
                 from_start = false;
                 break;
+             case border_fill:
+                fillStartingFrom(*c);
              case changing:
                 break;
             }
@@ -255,6 +258,52 @@ void MainWindow::label_clicked() {
         }
     }
 }
+
+void MainWindow::fillStartingFrom(Point p) {
+    vector<Point> queue;
+    queue.push_back(p);
+    while(!queue.empty()) {
+        Point tmp;
+        cout << "working " << queue.size() << endl;
+        auto element = queue[0];
+        queue.erase(queue.begin());
+
+        if(element.x + 1 < 500) {
+            tmp = Point(element.x + 1, element.y);
+            if(myLabel->getPixel(tmp) != border
+                    && myLabel->getPixel(tmp) != fill) {
+                myLabel->setPixel(tmp, fill);
+                queue.push_back(tmp);
+        } }
+
+        if(element.x - 1 >= 0) {
+            tmp = Point(element.x - 1, element.y);
+            if(myLabel->getPixel(tmp) != border
+                    && myLabel->getPixel(tmp) != fill) {
+                myLabel->setPixel(tmp, fill);
+                queue.push_back(tmp);
+            }
+        }
+        if(element.y + 1 < 500) {
+            tmp = Point(element.x, element.y + 1);
+            if(myLabel->getPixel(tmp) != border
+                    && myLabel->getPixel(tmp) != fill) {
+                myLabel->setPixel(tmp, fill);
+                queue.push_back(tmp);
+            }}
+        if(element.y - 1 >= 0) {
+            tmp = Point(element.x, element.y - 1);
+            if(myLabel->getPixel(tmp) != border
+                    && myLabel->getPixel(tmp) != fill) {
+                myLabel->setPixel(tmp, fill);
+                queue.push_back(tmp);
+            }
+        }
+
+    }
+    myLabel->update();
+}
+
 
 void MainWindow::label_radius() {
     Point c(myLabel->getX(), myLabel->getY());
@@ -412,6 +461,7 @@ void MainWindow::on_drawline_clicked()
     ui->drawpolygon->setChecked(false);
     ui->pushButton_3->setChecked(false);
     ui->pushButton_4->setChecked(false);
+    ui->borderfill->setChecked(false);
 
 
 }
@@ -427,6 +477,7 @@ void MainWindow::on_drawcircle_clicked()
     ui->drawpolygon->setChecked(false);
     ui->pushButton_3->setChecked(false);
     ui->pushButton_4->setChecked(false);
+    ui->borderfill->setChecked(false);
 
 
 }
@@ -441,6 +492,7 @@ void MainWindow::on_drawpolygon_clicked()
     ui->drawpolygon->setChecked(true);
     ui->pushButton_3->setChecked(false);
     ui->pushButton_4->setChecked(false);
+    ui->borderfill->setChecked(false);
 
 }
 
@@ -454,6 +506,7 @@ void MainWindow::on_pushButton_3_clicked()
     ui->drawpolygon->setChecked(false);
     ui->pushButton_3->setChecked(true);
     ui->pushButton_4->setChecked(false);
+    ui->borderfill->setChecked(false);
 
 }
 
@@ -586,6 +639,7 @@ void MainWindow::on_pushButton_2_clicked()
     ui->pushButton_4->setChecked(false);
     ui->pushButton_2->setChecked(true);
     ui->pushButton->setChecked(false);
+    ui->borderfill->setChecked(false);
 
 }
 
@@ -601,6 +655,8 @@ void MainWindow::on_pushButton_4_clicked()
     ui->pushButton_2->setChecked(false);
     ui->pushButton_4->setChecked(true);
     ui->pushButton->setChecked(false);
+    ui->borderfill->setChecked(false);
+
 }
 
 void MainWindow::on_actionUsage_triggered()
@@ -618,4 +674,25 @@ void MainWindow::on_actionUsage_triggered()
     msgBox.setStandardButtons(QMessageBox::Close);
     msgBox.setDefaultButton(QMessageBox::Close);
     int ret = msgBox.exec();
+}
+
+void MainWindow::on_borderfill_clicked()
+{
+    auto dialog = new BorderFillDialog(this, col);
+    dialog->exec();
+    if(!dialog->isCanceled()) {
+        cout << "mode changed to border_fill" << endl;
+        ui->drawline->setChecked(false);
+        ui->drawcircle->setChecked(false);
+        ui->drawpolygon->setChecked(false);
+        ui->pushButton_3->setChecked(false);
+        ui->pushButton_2->setChecked(false);
+        ui->pushButton_4->setChecked(false);
+        ui->pushButton->setChecked(false);
+        ui->borderfill->setChecked(true);
+        _mode = border_fill;
+        border = dialog->getBorder();
+        fill = dialog->getFill();
+    }
+    delete dialog;
 }

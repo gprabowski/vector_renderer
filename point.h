@@ -11,5 +11,8 @@ struct Point {
     bool distance_small(const Point& p2);
     Point operator-(const Point& other);
     Point operator*(const double& mul);
+    bool operator<(const Point& other) {
+        return x*1000 + y < other.x*1000 + other.y;
+    }
 };
 #endif // POINT_H

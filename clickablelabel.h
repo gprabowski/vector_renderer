@@ -17,6 +17,7 @@ public:
     void update();
     QImage getImage();
     void setPixel(Point p, Color val);
+    Color getPixel(Point p);
     ~ClickableLabel();
 
 signals:

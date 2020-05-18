@@ -63,7 +63,7 @@
        <layout class="QVBoxLayout" name="verticalLayout_2"/>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,1,1,0,0,0,0,2,0,0">
+       <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,1,1,0,0,0,0,0,2,0,0">
         <item>
          <spacer name="verticalSpacer">
           <property name="orientation">
@@ -124,6 +124,16 @@
          <widget class="QPushButton" name="pushButton_3">
           <property name="text">
            <string>Rectangle</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="borderfill">
+          <property name="text">
+           <string>Border Fill</string>
           </property>
           <property name="checkable">
            <bool>true</bool>

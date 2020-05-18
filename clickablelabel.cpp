@@ -56,6 +56,15 @@ void ClickableLabel::setPixel(Point p, Color val) {
     }
 }
 
+Color ClickableLabel::getPixel(Point p) {
+    if(p.x < 500 && p.x >= 0 && p.y < 500 && p.y >= 0) {
+        return Color(b_img[p.x * 4 + p.y * 500 * 4 + 2],
+        b_img[p.x * 4 + p.y * 500 * 4 + 1],
+        b_img[p.x * 4 + p.y * 500 * 4]);
+    }
+    else return Color(255, 255, 255);
+}
+
 void ClickableLabel::setup() {
     image = this->pixmap()->toImage();
     b_img = image.bits();

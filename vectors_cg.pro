@@ -17,6 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     angle.cpp \
+    borderfilldialog.cpp \
     circle.cpp \
     clickablelabel.cpp \
     edge.cpp \
@@ -32,6 +33,7 @@ SOURCES += \
 
 HEADERS += \
     angle.h \
+    borderfilldialog.h \
     circle.h \
     clickablelabel.h \
     color.h \
@@ -47,6 +49,7 @@ HEADERS += \
     utility_func.h
 
 FORMS += \
+    borderfilldialog.ui \
     editdrawabledialog.ui \
     filldialog.ui \
     mainwindow.ui

@@ -22,7 +22,7 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
-    enum mode {line, circle, polygon, angle, rectangle, changing};
+    enum mode {line, circle, polygon, angle, rectangle, changing, border_fill};
     enum rectangle_changing{ nothing, up, right, down, left};
     ~MainWindow();
 
@@ -52,7 +52,11 @@ private slots:
 
     void on_actionUsage_triggered();
 
+    void on_borderfill_clicked();
+
 private:
+    Color border = Color(255, 255, 255);
+    Color fill = Color(255, 255, 255);
     drawable* edited_shape;
     bool changingRadius = false;
     rectangle_changing rec_change = nothing;
@@ -70,6 +74,7 @@ private:
     ClickableLabel* myLabel;
     Point* changingPoint = nullptr;
     EditDrawableDialog* dialog;
+    void fillStartingFrom(Point p);
 };
 
 #endif // MAINWINDOW_H
