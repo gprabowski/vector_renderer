@@ -12,6 +12,7 @@ public:
     Point* getPoint(int i) override;
     void draw(ClickableLabel* lab) override;
     void erase(ClickableLabel* lab) override;
+    void erase_clip(ClickableLabel* lab);
     bool isFinished() override;
     bool isFilled();
     void setFilled(fillType val, Color col);
@@ -24,6 +25,7 @@ public:
     bool isConvex();
     void setClipper(bool val) {clipper = val;}
     void setClippedShape(polygon* p) {clippedShape = p;}
+    void clip(ClickableLabel* lab);
 
 private:
     QImage img;

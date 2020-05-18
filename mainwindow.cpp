@@ -94,10 +94,8 @@ void MainWindow::label_clip() {
         if(close) {
             reinterpret_cast<class polygon*>(edited_shape)->setClippedShape(reinterpret_cast<class polygon*>(d));
             reinterpret_cast<class polygon*>(edited_shape)->setClipper(true);
-            edited_shape->setColor(Color(255, 0, 0));
-            d->setColor(Color(0, 255, 0));
-            edited_shape->draw(myLabel);
-            d->draw(myLabel);
+            reinterpret_cast<class polygon*>(edited_shape)->clip(myLabel);
+            from_start = true;
         }
     }
 }
@@ -381,12 +379,7 @@ void MainWindow::label_move() {
         Point d(myLabel->getX(), myLabel->getY());
         int x_change = d.x - changingPoint->x;
         int y_change = d.y - changingPoint->y;
-        if(movingPolygon) {
-            movingPolygon = false;
-            reinterpret_cast<class polygon*>(edited_shape)->setYmax(reinterpret_cast<class polygon*>(edited_shape)->getYmax() + y_change);
-            reinterpret_cast<class polygon*>(edited_shape)->setYmin(reinterpret_cast<class polygon*>(edited_shape)->getYmin() + y_change);
-            cout << "moving pol: " << x_change << ' ' << y_change << endl;
-        }
+
         if(movingRectangle) {
             movingRectangle = false;
             cout << "moving rec: " << x_change << ' ' << y_change << endl;
@@ -394,6 +387,12 @@ void MainWindow::label_move() {
         for(auto point: edited_shape->getPoints()) {
             point->x += x_change;
             point->y += y_change;
+        }
+        if(movingPolygon) {
+            movingPolygon = false;
+            reinterpret_cast<class polygon*>(edited_shape)->setYmax(reinterpret_cast<class polygon*>(edited_shape)->getYmax() + y_change);
+            reinterpret_cast<class polygon*>(edited_shape)->setYmin(reinterpret_cast<class polygon*>(edited_shape)->getYmin() + y_change);
+            cout << "moving pol: " << x_change << ' ' << y_change << endl;
         }
         edited_shape->draw(myLabel);
         changingPoint = nullptr;
@@ -467,7 +466,9 @@ void MainWindow::on_actionReset_triggered()
         object->erase(myLabel);
         free(object);
     }
-    objects.clear();
+    _current.fill(QColor(255,255,255));
+    myLabel->setPixmap(QPixmap::fromImage(_current));
+    myLabel->setup();
     for(int i = points.size() - 1; i >= 0; --i) {
         free(points[i].first);
         points.pop_back();

@@ -8,3 +8,10 @@ bool Point::operator<(const Point& p2) const {
 bool Point::distance_small(const Point& p2) {
     return std::sqrt((x - p2.x)*(x - p2.x) + (y - p2.y) * (y - p2.y)) < 10;
 }
+Point Point::operator-(const Point& other) {
+    return Point(x - other.x, y - other.y);
+}
+
+Point Point::operator*(const double& mul) {
+    return Point(x * mul, y * mul);
+}

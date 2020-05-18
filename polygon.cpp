@@ -48,6 +48,10 @@ void polygon::draw(ClickableLabel* lab) {
     }
     if(filled == solid)
         fill(fillColor, lab);
+    else if(clipper) {
+        erase_clip(lab);
+        clip(lab);
+    }
 }
 
 void polygon::erase(ClickableLabel* lab) {
@@ -140,4 +144,71 @@ bool polygon::isConvex() {
         if(pos&&neg) return false;
     }
     return true;
+}
+
+double dot_product(Point a, Point b) {
+    return a.x * b.x + a.y * b.y;
+}
+
+inline Point parametrized_equation(double t, Point a, Point b) {
+    return Point(a - (a - b) * t);
+}
+
+void polygon::erase_clip(ClickableLabel* lab) {
+    if(clipper) {
+        clippedShape->draw(lab);
+        this->clip(lab);
+    }
+}
+
+void polygon::clip(ClickableLabel* lab){
+    if(!isConvex()) {
+        clipper = false;
+        clippedShape->erase(lab);
+        clippedShape->setThickness(1);
+        clippedShape->draw(lab);
+        return;
+    }
+    clippedShape->setThickness(3);
+    clippedShape->draw(lab);
+    bool clockwise = false;
+    int h = points[0]->y;
+    int pos = 0;
+    for(int i = 1; i < (int)points.size(); ++i)
+        if(points[i]->y < h) {
+            pos = i;
+            h = points[i]->y;
+        }
+//    if(points[pos]->x > points[(pos + 1)%points.size()]->x || points[pos]->x < points[(pos - 1) % points.size()]->x)
+//        clockwise = false;
+//    clockwise ? cout << "CLOCKWISE" << endl : cout << "COUNTER - CLOCKWISE" << endl;
+
+    for(int i = 0; i < (int)clippedShape->getPoints().size(); ++i) {
+        double te = 0, tl = 1;
+        Point* p0 = clippedShape->getPoint(i);
+        Point* p1 = clippedShape->getPoint((i + 1) % clippedShape->getPoints().size());
+        Point d = *p1 - *p0;
+//        if(p0->x > p1->x)
+//            std::swap(p0, p1);
+        cout << "POINTS  " << p0->x << ' ' << p1->x << endl;
+        for(int j = 0; j < (int)points.size(); ++j) {
+            //classify and find internal intersections
+            Point* a = points[j % points.size()];
+            Point* b = points[(j + 1) % points.size()];
+            Point pe((a->x + b->x)/2, (a->y + b->y)/2);
+            Point n_vec(b->y - a->y, b->x - a->x);
+            if(clockwise) n_vec.x = (-1) * n_vec.x;
+            else n_vec.y = (-1) * n_vec.y;
+            double dp = dot_product(Point(n_vec), d);
+            double t = dot_product(n_vec, *p0 - pe) / dot_product(n_vec * -1, d);
+            if(dp < 0) te = std::max(t, te);
+            else if(dp > 0) tl = std::min(t, tl);
+            else continue;
+        }
+        if(te > tl) continue;
+        drawMidpointLine(parametrized_equation(te, *p0, *p1).x, parametrized_equation(te, *p0, *p1).y,
+                         parametrized_equation(tl, *p0, *p1).x, parametrized_equation(tl, *p0, *p1).y,
+                         Color(0, 255, 0), lab, 3);
+
+    }
 }
