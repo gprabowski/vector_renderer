@@ -212,3 +212,22 @@ void polygon::clip(ClickableLabel* lab){
 
     }
 }
+
+nlohmann::json polygon::Serialize() {
+    nlohmann::json a;
+    a["shape"] = this->getShape();
+    for(auto point : this->getPoints()) {
+        a["points"].push_back({point->x, point->y});
+    }
+    a["color"] = {this->getColor().r, this->getColor().g, this->getColor().b};
+    a["filled"] = filled;
+    if(filled == solid)
+        a["fill"] = {fillColor.r, fillColor.g, fillColor.b};
+    else if(filled == pattern)
+        a["fill"] = fileName;
+    img.save(QString::fromStdString(fileName));
+    a["thickness"] = this->getThickness();
+    a["size"] = this->getPoints().size();
+    cout << "saved a polygon!!!" << endl;
+    return a;
+}

@@ -6,6 +6,7 @@
 #include "point.h"
 #include "color.h"
 #include "utility_func.h"
+#include "nlohmann/json.hpp"
 
 using std::vector;
 class drawable {
@@ -24,6 +25,17 @@ class drawable {
         int getThickness() {return thickness;}
         Color getColor() {return col;}
         void setColor(Color col) {this->col = col;}
+        virtual nlohmann::json Serialize() {
+            nlohmann::json a;
+            a["shape"] = this->getShape();
+            for(auto point : this->getPoints()) {
+                a["points"].push_back({point->x, point->y});
+            }
+            a["color"] = {this->getColor().r, this->getColor().g, this->getColor().b};
+            a["thickness"] = this->getThickness();
+            a["size"] = this->getPoints().size();
+            return a;
+        }
     protected:
         vector<Point*> points;
         Color col = {0, 0, 0};

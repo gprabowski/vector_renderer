@@ -26,9 +26,14 @@ public:
     void setClipper(bool val) {clipper = val;}
     void setClippedShape(polygon* p) {clippedShape = p;}
     void clip(ClickableLabel* lab);
+    void setFilename(std::string f) { fileName = f; }
+    std::string getFileName() { return fileName; }
+    nlohmann::json Serialize() override;
+
 
 private:
     QImage img;
+    std::string fileName;
     bool clipper = false;
     polygon* clippedShape = nullptr;
     fillType filled = absent;

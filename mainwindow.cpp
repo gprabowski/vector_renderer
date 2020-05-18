@@ -123,6 +123,7 @@ void MainWindow::label_fill() {
                     reinterpret_cast<class polygon*>(d)->fill(_dialog->getColor(), myLabel);
                 } else {
                     reinterpret_cast<class polygon*>(d)->setFilled(polygon::pattern, _dialog->getColor());
+                    reinterpret_cast<class polygon*>(d)->setFilename(_dialog->getFilename().toStdString());
                     reinterpret_cast<class polygon*>(d)->setImg(QPixmap(_dialog->getFilename()).toImage());
                     reinterpret_cast<class polygon*>(d)->fill(_dialog->getColor(), myLabel);
                 }
@@ -549,18 +550,12 @@ void MainWindow::on_actionSave_triggered()
             tr("Project File(*.json);;All Files (*)"));
     json j;
     for(auto object : objects) {
-        json a;
-        a["shape"] = object->getShape();
-        for(auto point : object->getPoints()) {
-            a["points"].push_back({point->x, point->y});
-        }
-        a["color"] = {object->getColor().r, object->getColor().g, object->getColor().b};
-        a["thickness"] = object->getThickness();
-        a["size"] = object->getPoints().size();
-        j.push_back(a);
+        if(object->getShape() != drawable::pol) {
+        j.push_back(object->Serialize());
     }
     std::ofstream file(fileName.toStdString());
         file << j;
+}
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -572,9 +567,11 @@ void MainWindow::on_actionOpen_triggered()
         return;
     std::ifstream i(fileName.toStdString());
     json j;
+    string fName;
+    polygon::fillType filled;
     i >> j;
     cout << j.size() << endl;
-    Color col2(0, 0, 0);
+    Color col2(0, 0, 0), fillColor(0,0,0);
     int size;
     Point* p2;
     for (auto& element : j) {
@@ -599,11 +596,19 @@ void MainWindow::on_actionOpen_triggered()
           col2 = Color(element["color"][0], element["color"][1], element["color"][2]);
           current = new class polygon(col2);
           size = element["size"].get<int>();
+          filled = static_cast<polygon::fillType>(element["filled"].get<int>());
+          if(filled == polygon::solid)
+              fillColor = Color(element["fill"][0], element["fill"][1], element["fill"][2]);
+          else if(filled == polygon::pattern)
+              fName = element["fill"].get<string>();
           for(auto point : element["points"]) {
               p2 = new Point(point[0].get<int>(), point[1].get<int>());
               current->addPoint(p2);
               points.push_back(std::make_pair(p2, current));
           }
+          reinterpret_cast<class polygon* >(current)->setFilename(fName);
+          reinterpret_cast<class polygon* >(current)->setFilled(filled, fillColor);
+          reinterpret_cast<class polygon * >(current)->setImg(QImage(QString::fromStdString(fName)));
           current->setColor(col2);
           current->setThickness(element["thickness"].get<int>());
           current->draw(myLabel);

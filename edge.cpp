@@ -5,14 +5,14 @@
 Edge::direction Edge::getDir() const{ return dir; }
 void Edge::setDir(direction d) { dir = d; }
 Edge::Edge(Point a, Point b) {
-    xmax = std::max(a.x, b.x);
-    int xmin = std::min(a.x, b.x);
+    xmax = std::fmax(a.x, b.x);
+    int xmin = std::fmin(a.x, b.x);
     if(a.y < b.y)
         x = b.x;
     else
         x = a.x;
-    ymin = std::min(a.y, b.y);
-    ymax = std::max(a.y, b.y);
+    ymin = std::fmin(a.y, b.y);
+    ymax = std::fmax(a.y, b.y);
     if(x == xmin) dir = right;
     else dir = left;
     numerator = xmax - xmin;
