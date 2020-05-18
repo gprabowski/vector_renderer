@@ -47,7 +47,9 @@ void polygon::draw(ClickableLabel* lab) {
                 col, lab, thickness);
     }
     if(filled == solid)
-        fill(fillColor, lab);
+        fill(lab, fillColor);
+    else if(filled == pattern)
+        fill(lab);
     else if(clipper) {
         erase_clip(lab);
         clip(lab);
@@ -63,20 +65,19 @@ void polygon::erase(ClickableLabel* lab) {
                 Color(255, 255, 255), lab, thickness);
     }
     if(filled == solid || filled == pattern) {
-        filled = solid;
-        fill(Color(255, 255, 255), lab);
+        fill(lab, Color(255, 255, 255), true);
     }
 }
 
 bool polygon::isFinished() { return finished; }
 
-bool polygon::isFilled() { return filled; }
+polygon::fillType polygon::getFilled() { return filled; }
 void polygon::setFilled(fillType val, Color col) { filled = val; fillColor = col; }
 
 int polygon::getYmax() { return ymax; }
 int polygon::getYmin() { return ymin; }
 
-void polygon::fill(Color col, ClickableLabel* myLabel) {
+void polygon::fill(ClickableLabel* myLabel, Color col, bool clean) {
         std::vector<std::vector<Edge>> ET(ymax - ymin);
         std::vector<Edge> AET;
         int w, h;
@@ -118,8 +119,8 @@ void polygon::fill(Color col, ClickableLabel* myLabel) {
             for(int j = 0; j < (int)AET.size(); j += 2) {
                 cout << "SIZE " << AET[j + 1].getX() << " " << AET[j].getX() << endl;
                 for(int k = AET[j].getX(); k <= AET[j + 1].getX(); ++k) {
-                    if(filled == solid) myLabel->setPixel(Point(k, level), col);
-                    if(filled == pattern) myLabel->setPixel(Point(k, level), Color(img.bits()[(k%w)*4 + (level%h)*w*4 + 2],
+                    if(filled == solid || clean) myLabel->setPixel(Point(k, level), col);
+                    if(filled == pattern && !clean) myLabel->setPixel(Point(k, level), Color(img.bits()[(k%w)*4 + (level%h)*w*4 + 2],
                                                                                     img.bits()[(k%w)*4 + (level%h)*w*4 + 1],
                                                                                     img.bits()[(k%w)*4 + (level%h)*w*4]));
                 }
@@ -221,6 +222,8 @@ nlohmann::json polygon::Serialize() {
     }
     a["color"] = {this->getColor().r, this->getColor().g, this->getColor().b};
     a["filled"] = filled;
+    a["ymax"] = ymax;
+    a["ymin"] = ymin;
     if(filled == solid)
         a["fill"] = {fillColor.r, fillColor.g, fillColor.b};
     else if(filled == pattern)

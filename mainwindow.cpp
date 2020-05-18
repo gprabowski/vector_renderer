@@ -120,12 +120,17 @@ void MainWindow::label_fill() {
             if(!_dialog->isCanceled()){
                 if(_dialog->isSolid()) {
                     reinterpret_cast<class polygon*>(d)->setFilled(polygon::solid, _dialog->getColor());
-                    reinterpret_cast<class polygon*>(d)->fill(_dialog->getColor(), myLabel);
+                    reinterpret_cast<class polygon*>(d)->fill(myLabel, _dialog->getColor());
                 } else {
                     reinterpret_cast<class polygon*>(d)->setFilled(polygon::pattern, _dialog->getColor());
-                    reinterpret_cast<class polygon*>(d)->setFilename(_dialog->getFilename().toStdString());
+                    auto fName = _dialog->getFilename().toStdString();
+                    for(int i = fName.length(); i > 0; --i)
+                        if(fName[i - 1] == '/') {
+                            reinterpret_cast<class polygon*>(d)->setFilename(fName.substr(i));
+                            break;
+                        }
                     reinterpret_cast<class polygon*>(d)->setImg(QPixmap(_dialog->getFilename()).toImage());
-                    reinterpret_cast<class polygon*>(d)->fill(_dialog->getColor(), myLabel);
+                    reinterpret_cast<class polygon*>(d)->fill(myLabel, _dialog->getColor());
                 }
             }
         }
@@ -442,7 +447,7 @@ void MainWindow::label_move() {
             movingPolygon = false;
             reinterpret_cast<class polygon*>(edited_shape)->setYmax(reinterpret_cast<class polygon*>(edited_shape)->getYmax() + y_change);
             reinterpret_cast<class polygon*>(edited_shape)->setYmin(reinterpret_cast<class polygon*>(edited_shape)->getYmin() + y_change);
-            cout << "moving pol: " << x_change << ' ' << y_change << endl;
+            cout << "moving pol: " << reinterpret_cast<class polygon*>(edited_shape)->getFilled()  << '  ' << x_change << ' ' << y_change << endl;
         }
         edited_shape->draw(myLabel);
         changingPoint = nullptr;
@@ -516,10 +521,12 @@ void MainWindow::on_actionReset_triggered()
 {
     from_start = true;
     changingPoint = nullptr;
-    for(auto object : objects) {
-        object->erase(myLabel);
-        free(object);
-    }
+    if(objects.size())
+        for(auto object : objects) {
+            object->erase(myLabel);
+            free(object);
+        }
+    objects.clear();
     _current.fill(QColor(255,255,255));
     myLabel->setPixmap(QPixmap::fromImage(_current));
     myLabel->setup();
@@ -550,13 +557,12 @@ void MainWindow::on_actionSave_triggered()
             tr("Project File(*.json);;All Files (*)"));
     json j;
     for(auto object : objects) {
-        if(object->getShape() != drawable::pol) {
         j.push_back(object->Serialize());
     }
     std::ofstream file(fileName.toStdString());
         file << j;
 }
-}
+
 
 void MainWindow::on_actionOpen_triggered()
 {
@@ -589,6 +595,7 @@ void MainWindow::on_actionOpen_triggered()
           current->setColor(col2);
           current->setThickness(element["thickness"].get<int>());
           current->draw(myLabel);
+          objects.push_back(current);
           current = nullptr;
           break;
       case 1:
@@ -607,11 +614,14 @@ void MainWindow::on_actionOpen_triggered()
               points.push_back(std::make_pair(p2, current));
           }
           reinterpret_cast<class polygon* >(current)->setFilename(fName);
+          reinterpret_cast<class polygon* >(current)->setYmax(element["ymax"].get<double>());
+          reinterpret_cast<class polygon* >(current)->setYmin(element["ymin"].get<double>());
           reinterpret_cast<class polygon* >(current)->setFilled(filled, fillColor);
           reinterpret_cast<class polygon * >(current)->setImg(QImage(QString::fromStdString(fName)));
           current->setColor(col2);
           current->setThickness(element["thickness"].get<int>());
           current->draw(myLabel);
+          objects.push_back(current);
           current = nullptr;
           break;
       case 2:
@@ -627,6 +637,7 @@ void MainWindow::on_actionOpen_triggered()
           current->setColor(col2);
           current->setThickness(element["thickness"].get<int>());
           current->draw(myLabel);
+          objects.push_back(current);
           current = nullptr;
           break;
       }

@@ -14,14 +14,14 @@ public:
     void erase(ClickableLabel* lab) override;
     void erase_clip(ClickableLabel* lab);
     bool isFinished() override;
-    bool isFilled();
+    fillType getFilled();
     void setFilled(fillType val, Color col);
     int getYmax();
     int getYmin();
     void setYmax(int val) { ymax = val; };
     void setYmin(int val) { ymin = val; };
     void setImg(QImage i) { img = i; }
-    void fill(Color col, ClickableLabel* myLabel);
+    void fill(ClickableLabel* myLabel, Color col = Color(255, 255, 255), bool clean = false);
     bool isConvex();
     void setClipper(bool val) {clipper = val;}
     void setClippedShape(polygon* p) {clippedShape = p;}
